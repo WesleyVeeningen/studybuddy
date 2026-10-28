@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getT } from "@/lib/i18n/server";
 import { and, asc, eq, lte } from "drizzle-orm";
 import { Suspense } from "react";
 import { FlashcardsView } from "@/components/flashcards/flashcards-view";
@@ -8,7 +9,10 @@ import { db, schema } from "@/lib/db";
 import { getFlashcardStats, getReadyFiles } from "@/lib/queries";
 import { getDueCutoff } from "@/lib/time-server";
 
-export const metadata: Metadata = { title: "Flashcards" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t("course.tabs.flashcards") };
+}
 
 export default function FlashcardsPage({ params }: PageProps<"/courses/[courseId]/flashcards">) {
   return (

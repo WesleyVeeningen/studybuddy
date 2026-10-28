@@ -10,7 +10,10 @@ import { getT } from "@/lib/i18n/server";
 import { getDashboard } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t("nav.dashboard") };
+}
 
 export default function DashboardPage() {
   return (

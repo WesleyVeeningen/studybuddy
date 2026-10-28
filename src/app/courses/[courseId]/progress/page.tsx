@@ -8,7 +8,10 @@ import { requireOwnedCourse } from "@/lib/auth";
 import { getT } from "@/lib/i18n/server";
 import { getFlashcardStats, getQuizHistory, getReviewsThisWeek, getTopicStats, topicsToReview } from "@/lib/queries";
 
-export const metadata: Metadata = { title: "Progress" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t("course.tabs.progress") };
+}
 
 export default function ProgressPage({ params }: PageProps<"/courses/[courseId]/progress">) {
   return (
@@ -49,6 +52,7 @@ async function ProgressView({ params }: { params: Promise<{ courseId: string }> 
             <p className="text-sm text-muted-foreground">{t("quiz.empty")}</p>
           ) : (
             <ScoreChart
+              label={t("progress.chartLabel")}
               points={completed.map((q) => ({
                 id: q.id,
                 score: Math.round(q.score ?? 0),
@@ -96,9 +100,15 @@ function Stat({ label, value }: { label: string; value: string | number }) {
 }
 
 /** Simple bar chart of recent quiz scores (oldest → newest). */
-function ScoreChart({ points }: { points: { id: string; score: number; label: string; title: string; href: string }[] }) {
+function ScoreChart({
+  points,
+  label,
+}: {
+  points: { id: string; score: number; label: string; title: string; href: string }[];
+  label: string;
+}) {
   return (
-    <ol className="flex h-44 items-end gap-2" aria-label="Quiz scores">
+    <ol className="flex h-44 items-end gap-2" aria-label={label}>
       {points.map((p) => {
         const tone = p.score >= 80 ? "bg-success/70" : p.score >= 55 ? "bg-warning/80" : "bg-destructive/60";
         return (

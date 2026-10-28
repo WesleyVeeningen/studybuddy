@@ -24,8 +24,17 @@ export function kindFromName(name: string): (typeof schema.fileKind.enumValues)[
 
 async function readBlob(pathname: string): Promise<Uint8Array> {
   const result = await get(pathname, { access: "private", useCache: false });
-  if (!result || result.statusCode !== 200) throw new Error("Could not read the uploaded file.");
+  if (!result || result.statusCode !== 200) throw new IngestError("unreadable");
   return new Uint8Array(await new Response(result.stream).arrayBuffer());
+}
+
+/** Stored in files.error and translated in the UI. */
+export type FileErrorCode = "no_text" | "unreadable" | "failed";
+
+class IngestError extends Error {
+  constructor(public code: FileErrorCode) {
+    super(code);
+  }
 }
 
 /**
@@ -41,7 +50,7 @@ export async function processFile(fileId: string, pastedText?: string) {
     if (file.kind === "text" && pastedText !== undefined) {
       pages = extractPlainText(pastedText);
     } else {
-      if (!file.blobPathname) throw new Error("File has no stored content.");
+      if (!file.blobPathname) throw new IngestError("unreadable");
       const data = await readBlob(file.blobPathname);
       const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
       if (file.kind === "pdf") pages = await extractPdf(data);
@@ -52,7 +61,7 @@ export async function processFile(fileId: string, pastedText?: string) {
 
     const drafts = chunkPages(pages);
     if (drafts.length === 0) {
-      throw new Error("We couldn't find any readable text in this file.");
+      throw new IngestError("no_text");
     }
 
     const embeddings = await embedTexts(
@@ -87,7 +96,7 @@ export async function processFile(fileId: string, pastedText?: string) {
     console.error("processFile failed", fileId, err);
     await db
       .update(schema.files)
-      .set({ status: "error", error: err instanceof Error ? err.message.slice(0, 300) : "Processing failed." })
+      .set({ status: "error", error: err instanceof IngestError ? err.code : "failed" })
       .where(eq(schema.files.id, file.id));
   }
 }

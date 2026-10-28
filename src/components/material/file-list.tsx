@@ -27,6 +27,12 @@ export type FileItem = {
 
 const ICONS = { pdf: FileText, pptx: Presentation, image: FileImage, text: ScrollText };
 
+const ERROR_KEYS: Record<string, DictKey> = {
+  no_text: "material.error.noText",
+  unreadable: "material.error.unreadable",
+  failed: "material.error.failed",
+};
+
 export function FileList({ files }: { files: FileItem[] }) {
   const t = useT();
   const router = useRouter();
@@ -73,7 +79,7 @@ function FileRow({ file }: { file: FileItem }) {
         <p className="truncate text-sm text-muted-foreground">
           {t(`material.kind.${file.kind}`)}
           {file.status === "ready" && file.pageCount && file.kind !== "image" && <> · {t(countKey, { count: file.pageCount })}</>}
-          {file.status === "error" && file.error && <span className="text-destructive"> · {file.error}</span>}
+          {file.status === "error" && <span className="text-destructive"> · {t(ERROR_KEYS[file.error ?? ""] ?? "material.error.failed")}</span>}
         </p>
       </div>
       {file.status === "processing" && (
@@ -88,7 +94,7 @@ function FileRow({ file }: { file: FileItem }) {
       )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="File options" disabled={pending}>
+          <Button variant="ghost" size="icon" aria-label={t("material.fileOptions")} disabled={pending}>
             {pending ? <Loader2 className="animate-spin" /> : <MoreHorizontal />}
           </Button>
         </DropdownMenuTrigger>

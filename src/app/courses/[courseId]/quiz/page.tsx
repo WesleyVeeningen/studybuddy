@@ -9,7 +9,10 @@ import { requireOwnedCourse } from "@/lib/auth";
 import { getT } from "@/lib/i18n/server";
 import { getQuizHistory, getReadyFiles } from "@/lib/queries";
 
-export const metadata: Metadata = { title: "Quiz" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t("course.tabs.quiz") };
+}
 
 export default function QuizPage({ params, searchParams }: PageProps<"/courses/[courseId]/quiz">) {
   return (

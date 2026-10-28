@@ -159,14 +159,15 @@ function PasteDialog({ courseId }: { courseId: string }) {
           action={(form) =>
             startTransition(async () => {
               try {
-                await addPastedText({
+                const res = await addPastedText({
                   courseId,
                   title: String(form.get("title") ?? ""),
                   text: String(form.get("text") ?? ""),
                 });
-                setOpen(false);
-              } catch (err) {
-                toast.error(err instanceof Error ? err.message : t("common.error"));
+                if (res.ok) setOpen(false);
+                else toast.error(t(res.error === "too_short" ? "material.paste.tooShort" : "material.paste.tooLong"));
+              } catch {
+                toast.error(t("common.error"));
               }
             })
           }

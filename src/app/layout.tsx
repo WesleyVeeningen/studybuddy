@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Figtree, Fraunces, JetBrains_Mono } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Suspense } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -11,12 +10,17 @@ import { Logo } from "@/components/logo";
 import "./globals.css";
 
 const sans = Figtree({ variable: "--font-sans", subsets: ["latin"] });
-const serif = Fraunces({ variable: "--font-serif", subsets: ["latin"], axes: ["SOFT", "opsz"] });
+const serif = Fraunces({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  axes: ["SOFT", "opsz"],
+});
 const mono = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: { default: "StudyBuddy", template: "%s · StudyBuddy" },
-  description: "Upload your course material and study it with a patient AI tutor.",
+  description:
+    "Upload your course material and study it with a patient AI tutor.",
 };
 
 export const viewport: Viewport = {
@@ -34,19 +38,22 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${sans.variable} ${serif.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <ClerkProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <TooltipProvider delayDuration={300}>
-              <Suspense fallback={<HeaderFallback />}>
-                <LocaleRoot>
-                  <SiteHeader />
-                  <main className="flex flex-1 flex-col">{children}</main>
-                </LocaleRoot>
-              </Suspense>
-              <Toaster position="top-center" />
-            </TooltipProvider>
-          </ThemeProvider>
-        </ClerkProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TooltipProvider delayDuration={300}>
+            <Suspense fallback={<HeaderFallback />}>
+              <LocaleRoot>
+                <SiteHeader />
+                <main className="flex flex-1 flex-col">{children}</main>
+              </LocaleRoot>
+            </Suspense>
+            <Toaster position="top-center" />
+          </TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

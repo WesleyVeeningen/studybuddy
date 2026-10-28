@@ -9,6 +9,8 @@ import {
 import { z } from "zod";
 import { TUTOR_MODEL } from "@/lib/ai";
 import { getApiUserId, getOwnedCourse } from "@/lib/auth";
+import { getLocale } from "@/lib/i18n/server";
+import { LANGUAGE_NAMES } from "@/lib/material";
 import { formatSources, locationLabel, searchCourse } from "@/lib/rag";
 import { buildTutorInstructions, type ChatMetadata, type ChatSource } from "@/lib/tutor";
 
@@ -48,7 +50,7 @@ export async function POST(req: Request) {
     ? [lastUser, prevUser, lastAssistant.slice(0, 600)].filter(Boolean).join("\n")
     : lastUser;
 
-  const chunks = await searchCourse(course.id, query, { limit: 8 });
+  const [chunks, locale] = await Promise.all([searchCourse(course.id, query, { limit: 8 }), getLocale()]);
   const sources: ChatSource[] = chunks.map((c, i) => ({
     id: i + 1,
     fileId: c.fileId,
@@ -59,7 +61,12 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: TUTOR_MODEL,
-    instructions: buildTutorInstructions({ courseName: course.name, sources: formatSources(chunks), mode }),
+    instructions: buildTutorInstructions({
+      courseName: course.name,
+      sources: formatSources(chunks),
+      mode,
+      language: LANGUAGE_NAMES[locale],
+    }),
     messages: await convertToModelMessages(messages.slice(-20)),
     maxOutputTokens: 1200,
   });

@@ -18,7 +18,7 @@ export function CourseActions({ courseId }: { courseId: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Course options" disabled={pending}>
+        <Button variant="ghost" size="icon" aria-label={t("course.options")} disabled={pending}>
           <MoreHorizontal />
         </Button>
       </DropdownMenuTrigger>

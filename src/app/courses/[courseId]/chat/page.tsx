@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
+import { getT } from "@/lib/i18n/server";
 import { Suspense } from "react";
 import { TutorChat } from "@/components/chat/tutor-chat";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireOwnedCourse } from "@/lib/auth";
 import { getReadyFiles } from "@/lib/queries";
 
-export const metadata: Metadata = { title: "Chat" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t("course.tabs.chat") };
+}
 
 export default function ChatPage({ params }: PageProps<"/courses/[courseId]/chat">) {
   return (

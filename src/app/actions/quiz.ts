@@ -194,7 +194,7 @@ export async function answerQuestion(input: { questionId: string; response: stri
       model: TUTOR_MODEL,
       output: Output.object({ schema: gradingSchema }),
       instructions: `You grade a student's answer to an open study question. Be fair and encouraging, but accurate.
-Judge meaning, not wording; ignore spelling mistakes. Write the feedback in ${LANGUAGE_NAMES[locale]}, unless the student answered in another language — then use the student's language.
+Judge meaning, not wording; ignore spelling mistakes, and accept answers written in any language. Always write the feedback in ${LANGUAGE_NAMES[locale]}.
 Only use the model answer and source material to judge; mention the specific key points the student missed.`,
       prompt: `Question: ${question.prompt}
 Model answer (key points): ${question.answer}

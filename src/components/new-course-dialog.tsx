@@ -70,7 +70,7 @@ export function NewCourseDialog() {
                 <button
                   key={c}
                   type="button"
-                  aria-label={c}
+                  aria-label={t(`course.color.${c}`)}
                   aria-pressed={color === c}
                   onClick={() => setColor(c)}
                   className={cn(

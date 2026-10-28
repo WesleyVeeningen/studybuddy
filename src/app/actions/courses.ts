@@ -64,13 +64,17 @@ export async function registerUpload(input: { courseId: string; pathname: string
   return { id: file.id };
 }
 
-export async function addPastedText(input: { courseId: string; title: string; text: string }) {
+export async function addPastedText(input: {
+  courseId: string;
+  title: string;
+  text: string;
+}): Promise<{ ok: true; id: string } | { ok: false; error: "too_short" | "too_long" }> {
   const userId = await requireUserId();
   const course = await getOwnedCourse(input.courseId, userId);
   if (!course) throw new Error("Course not found");
   const text = input.text.trim();
-  if (text.length < 20) throw new Error("Please paste a bit more text.");
-  if (text.length > 400_000) throw new Error("That's a lot of text. Please split it into smaller parts.");
+  if (text.length < 20) return { ok: false, error: "too_short" };
+  if (text.length > 400_000) return { ok: false, error: "too_long" };
 
   const title = (input.title.trim() || "Pasted notes").slice(0, 120);
   const blob = await put(`${userId}/${course.id}/${title.replace(/[^\w\- ]+/g, "")}.txt`, text, {
@@ -86,7 +90,7 @@ export async function addPastedText(input: { courseId: string; title: string; te
 
   after(() => processFile(file.id, text));
   refresh();
-  return { id: file.id };
+  return { ok: true, id: file.id };
 }
 
 export async function deleteFile(fileId: string) {
