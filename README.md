@@ -36,3 +36,9 @@ account is on the free tier, which doesn't include Claude).
   the model with feedback. Topic accuracy (last 10 attempts) drives "Topics to review".
 - **Flashcards** — generated from material, scheduled with SM-2 (`src/lib/sm2.ts`). "Due today" uses
   the student's own timezone (cookie set by the browser).
+
+## Deployment
+
+The Vercel project is connected to `WesleyVeeningen/studybuddy`: every push to `main` deploys to
+production, and other branches get preview deployments. Environment variables (DB, Blob, Clerk,
+`TUTOR_MODEL`) live in the Vercel project — manage them with `vercel env`.
