@@ -19,7 +19,7 @@
     "@vercel/blob": "^2.8.2",
     "ai": "^7.0.155",
     "class-variance-authority": "^0.7.1",
-    "cn": "^0.5.0",
+    "cn": "^0.5.1",
     "drizzle-orm": "^0.45.4",
     "fast-xml-parser": "^5.11.2",
     "jszip": "^3.10.2",
